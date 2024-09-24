@@ -1,10 +1,18 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { WordsModule } from './api/words/words.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://localhost/english-learning'), // Replace with your MongoDB URL.
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    MongooseModule.forRootAsync({
+      useFactory: (configSerive: ConfigService) => ({
+        uri: configSerive.get('MONGO_URL'),
+      }),
+    }),
     WordsModule,
   ],
 })
